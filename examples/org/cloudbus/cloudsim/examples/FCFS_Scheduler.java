@@ -26,7 +26,7 @@ public class FCFS_Scheduler {
         long size = 10000; //image size (MB)
         int ram = 512; //vm memory (MB)
         int mips = 250;
-        long bw = 1000;
+        long bw = 10;
         int pesNumber = 1; //number of cpus
         String vmm = "Xen"; //VMM name
 
@@ -91,8 +91,8 @@ public class FCFS_Scheduler {
             int brokerId = broker.getId();
 
             //Fourth step: Create VMs and Cloudlets and send them to broker
-            int vms = 23;
-            int cloudlets = 100;
+            int vms = 9;
+            int cloudlets = 200;
             vmList = createVM(brokerId, vms);
             cloudletList = createCloudlet(brokerId, cloudlets);
 

@@ -1,21 +1,19 @@
 package org.cloudbus.cloudsim.examples;
 
+
+
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import utils.Constants;
 import utils.DatacenterCreator;
 import utils.GenerateMatrices;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SJF_Scheduler {
+public class ant {
 
     private static List<Cloudlet> cloudletList;
     private static List<Vm> vmList;
@@ -31,7 +29,7 @@ public class SJF_Scheduler {
         long size = 10000; //image size (MB)
         int ram = 512; //vm memory (MB)
         int mips = 250;
-        long bw = 10;
+        long bw = 1000;
         int pesNumber = 1; //number of cpus
         String vmm = "Xen"; //VMM name
 
@@ -46,36 +44,38 @@ public class SJF_Scheduler {
         return list;
     }
 
-    private static List<Cloudlet> createCloudlet(int userId, int cloudlets){
-		// Creates a container to store Cloudlets
-		LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
+    private static List<Cloudlet> createCloudlet(int userId, int cloudlets, int idShift) {
+        // Creates a container to store Cloudlets
+        LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
 
-		//cloudlet parameters
-		long length = 1000;
-		long fileSize = 300;
-		long outputSize = 300;
-		int pesNumber = 1;
-		UtilizationModel utilizationModel = new UtilizationModelFull();
+        //cloudlet parameters
+        int length = 1000;
+        long fileSize = 300;
+        long outputSize = 300;
+        int pesNumber = 1;
+        UtilizationModel utilizationModel = new UtilizationModelFull();
 
-		Cloudlet[] cloudlet = new Cloudlet[cloudlets];
+        Cloudlet[] cloudlet = new Cloudlet[cloudlets];
 
-		for(int i=0;i<cloudlets;i++){
-			cloudlet[i] = new Cloudlet(i, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
-			// setting the owner of these Cloudlets
-			cloudlet[i].setUserId(userId);
-			list.add(cloudlet[i]);
-		}
-
-		return list;
-	}
+        for (int i = 0; i < cloudlets; i++) {
+           // int dcId = (int) (Math.random() * Constants.NO_OF_DATA_CENTERS);
+            //long length = (long) (1e3 * (commMatrix[i][dcId] + execMatrix[i][dcId]));
+            cloudlet[i] = new Cloudlet(idShift + i, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+            // setting the owner of these Cloudlets
+            cloudlet[i].setUserId(userId);
+            //cloudlet[i].setVmId(dcId + 2);
+            list.add(cloudlet[i]);
+        }
+        return list;
+    }
 
     public static void main(String[] args) {
-        Log.printLine("Starting SJF Scheduler...");
+        Log.printLine("Starting FCFS Scheduler...");
 
-//        new GenerateMatrices();
+
 //        execMatrix = GenerateMatrices.getExecMatrix();
 //        commMatrix = GenerateMatrices.getCommMatrix();
-
+//        new GenerateMatrices();
         try {
             int num_user = 1;   // number of grid users
             Calendar calendar = Calendar.getInstance();
@@ -90,14 +90,14 @@ public class SJF_Scheduler {
             }
 
             //Third step: Create Broker
-            SJFDatacenterBroker broker = createBroker("Broker_0");
+            FCFSDatacenterBroker broker = createBroker("Broker_0");
             int brokerId = broker.getId();
 
             //Fourth step: Create VMs and Cloudlets and send them to broker
-            int vms = 4;
-            int cloudlets = 200;
+            int vms = 20;
+            int cloudlets = 20;
             vmList = createVM(brokerId, vms);
-            cloudletList = createCloudlet(brokerId, cloudlets);
+            cloudletList = createCloudlet(brokerId, cloudlets, 0);
 
             broker.submitVmList(vmList);
             broker.submitCloudletList(cloudletList);
@@ -113,15 +113,15 @@ public class SJF_Scheduler {
 
             printCloudletList(newList, vms);
 
-            Log.printLine(SJF_Scheduler.class.getName() + " finished!");
+            Log.printLine(FCFS_Scheduler.class.getName() + " finished!");
         } catch (Exception e) {
             e.printStackTrace();
             Log.printLine("The simulation has been terminated due to an unexpected error");
         }
     }
 
-    private static SJFDatacenterBroker createBroker(String name) throws Exception {
-        return new SJFDatacenterBroker(name);
+    private static FCFSDatacenterBroker createBroker(String name) throws Exception {
+        return new FCFSDatacenterBroker(name);
     }
 
     /**
@@ -160,7 +160,7 @@ public class SJF_Scheduler {
             }
         }
         double makespan = calcMakespan(list, vms);
-        Log.printLine("Makespan using SJF: " + makespan);
+        Log.printLine("Makespan using FCFS: " + makespan);
     }
 
     private static double calcMakespan(List<Cloudlet> list, int vms) {
