@@ -43,8 +43,8 @@ public class AntColonyOptimization {
 
 	/** The vmlist. */
 	private static List<Vm> vmlist;
-	private static double[][] commMatrix;
-    private static double[][] execMatrix;
+//	private static double[][] commMatrix;
+//    private static double[][] execMatrix;
 
 	private static List<Vm> createVM(int userId, int vms) {
 
@@ -61,10 +61,10 @@ public class AntColonyOptimization {
 
 		//create VMs
 		Vm[] vm = new Vm[vms];
-		Random rmips=new Random(100);
+		//Random rmips=new Random(100);
 		for(int i=0;i<vms;i++){
-			mips=rmips.nextInt(900);
-			bw=10+rmips.nextInt(50);
+		//	mips=rmips.nextInt(900);
+		//	bw=10+rmips.nextInt(50);
 			vm[i] = new Vm(i, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
 			//for creating a VM with a space shared scheduling policy for cloudlets:
 			//vm[i] = Vm(i, userId, mips, pesNumber, ram, bw, size, priority, vmm, new CloudletSchedulerSpaceShared());
@@ -138,8 +138,8 @@ public class AntColonyOptimization {
 
 			//Fourth step: Create VMs and Cloudlets and send them to broker
 			
-			int vms =25;
-			int cloudlets = 10;
+			int vms = 9;
+			int cloudlets = 200;
 			vmlist = createVM(brokerId,vms); 
 			cloudletList = createCloudlet(brokerId,cloudlets); 	
 			
@@ -147,14 +147,14 @@ public class AntColonyOptimization {
 			int numCloudlets=cloudletList.size();
 			List<Vm> finalvmlist = new ArrayList<Vm>();
 			double factor=-100000;
-			int T_MAX=10;
-			int c=5;
-			double[][][] T = new double[numVMs+1][numCloudlets+1][T_MAX+1];
-			int[] M = new int[numVMs+1];
-			double a=.3;
-			double Q=100;
+			int T_MAX=10; 
+			int c=5; //initial pheromone value
+			double[][][] T = new double[numVMs+1][numCloudlets+1][T_MAX+1];  //3d matrix for trails
+			int[] M = new int[numVMs+1]; //array for ants
+			double a=.3; //evaporation rate
+			double Q=100; //pheromone importance
 			//double[] tabu = new double[numVMs+1];
-			int m=numVMs;
+			int m=numVMs; // no of ants
 			for(int i=0;i<=numVMs;i++)
 			{
 				for(int j=0;j<=numCloudlets;j++)
